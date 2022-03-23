@@ -42,7 +42,7 @@ namespace NamedPipeWrapper
         /// </summary>
         public bool AutoReconnect { get; set; }
 
-        public TimeSpan AutoReconnectDelay => TimeSpan.FromSeconds(5);
+        public TimeSpan AutoReconnectDelay { get; set; } = TimeSpan.FromSeconds(5);
 
         /// <summary>
         /// Invoked whenever a message is received from the server.
