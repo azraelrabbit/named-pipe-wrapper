@@ -4,6 +4,7 @@ using System.IO.Pipes;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using NamedPipeWrapper.IO;
 using NamedPipeWrapper.Threading;
 
@@ -40,6 +41,8 @@ namespace NamedPipeWrapper
         /// Default value is <c>true</c>.
         /// </summary>
         public bool AutoReconnect { get; set; }
+
+        public TimeSpan AutoReconnectDelay => TimeSpan.FromSeconds(5);
 
         /// <summary>
         /// Invoked whenever a message is received from the server.
@@ -177,7 +180,11 @@ namespace NamedPipeWrapper
 
             // Reconnect
             if (AutoReconnect && !_closedExplicitly)
+            {
+                Thread.Sleep(AutoReconnectDelay);
                 Start();
+            }
+                
         }
 
         private void OnReceiveMessage(NamedPipeConnection<TRead, TWrite> connection, TRead message)
