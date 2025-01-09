@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ceras;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipes;
@@ -26,7 +27,7 @@ namespace NamedPipeWrapper.IO
         /// </summary>
         public bool IsConnected { get; private set; }
 
-        private readonly BinaryFormatter _binaryFormatter = new BinaryFormatter();
+        private readonly CerasSerializer _binaryFormatter;
 
         /// <summary>
         /// Constructs a new <c>PipeStreamReader</c> object that reads data from the given <paramref name="stream"/>.
@@ -36,6 +37,9 @@ namespace NamedPipeWrapper.IO
         {
             BaseStream = stream;
             IsConnected = stream.IsConnected;
+            SerializerConfig config = new SerializerConfig();
+            config.Advanced.PersistTypeCache = true;
+            _binaryFormatter=new CerasSerializer(config);
         }
 
         #region Private stream readers
@@ -66,10 +70,13 @@ namespace NamedPipeWrapper.IO
         {
             var data = new byte[len];
             BaseStream.Read(data, 0, len);
-            using (var memoryStream = new MemoryStream(data))
-            {
-                return (T) _binaryFormatter.Deserialize(memoryStream);
-            }
+
+            return _binaryFormatter.Deserialize<T>(data);
+            //using (var memoryStream = new MemoryStream(data))
+            //{
+            //    _binaryFormatter.Deserialize<T>(data)
+            //    return (T) _binaryFormatter.Deserialize(memoryStream);
+            //}
         }
 
         #endregion

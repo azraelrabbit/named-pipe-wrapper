@@ -1,3 +1,4 @@
+using Ceras;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,7 +22,9 @@ namespace NamedPipeWrapper.IO
         /// </summary>
         public PipeStream BaseStream { get; private set; }
 
-        private readonly BinaryFormatter _binaryFormatter = new BinaryFormatter();
+        //private readonly BinaryFormatter _binaryFormatter = new BinaryFormatter();
+
+        private readonly CerasSerializer _binaryFormatter;
 
         /// <summary>
         /// Constructs a new <c>PipeStreamWriter</c> object that writes to given <paramref name="stream"/>.
@@ -30,6 +33,9 @@ namespace NamedPipeWrapper.IO
         public PipeStreamWriter(PipeStream stream)
         {
             BaseStream = stream;
+            SerializerConfig config = new SerializerConfig();
+            config.Advanced.PersistTypeCache = true;
+            _binaryFormatter = new CerasSerializer(config);
         }
 
         #region Private stream writers
@@ -39,11 +45,12 @@ namespace NamedPipeWrapper.IO
         {
             try
             {
-                using (var memoryStream = new MemoryStream())
-                {
-                    _binaryFormatter.Serialize(memoryStream, obj);
-                    return memoryStream.ToArray();
-                }
+                //using (var memoryStream = new MemoryStream())
+                //{
+                //    _binaryFormatter.Serialize(memoryStream, obj);
+                //    return memoryStream.ToArray();
+                //}
+                return _binaryFormatter.Serialize(obj);
             }
             catch
             {
